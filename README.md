@@ -1,9 +1,12 @@
 # SummonerWatchDog
 
-ENV
-NAME | REQUIRED / OPTIONAL | TYPE | DESCRIPTION
+ENVs
+
+**NAME | REQUIRED / OPTIONAL | TYPE | DESCRIPTION**
+
 RIOT_API_KEY | required | string | API Key to communicate with Riot API
-LAST_MATCHES_NUMBER | optional | non negative integer | number of matches to list summoner played, default is 5  
+
+LAST_MATCHES_NUMBER | optional | non negative integer | number of matches to list summoner played, default is 5
 
 To start your Phoenix server:
 
