@@ -9,7 +9,15 @@ defmodule SummonerWatchDog.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      test_coverage: [tool: ExCoveralls],
+      preferred_cli_env: [
+        coveralls: :test,
+        "coveralls.detail": :test,
+        "coveralls.post": :test,
+        "coveralls.html": :test,
+        "coveralls.cobertura": :test
+      ]
     ]
   end
 
@@ -43,10 +51,16 @@ defmodule SummonerWatchDog.MixProject do
       {:bandit, "~> 1.2"},
       # Riot
       {:seraphine, "~> 0.1"},
+      # Cron Job
+      {:oban, "~> 2.17"},
       # code convensions
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.0.0-rc.6", only: [:dev, :test], runtime: false},
-      {:sobelow, "~> 0.7", only: [:dev, :test], runtime: false}
+      {:sobelow, "~> 0.7", only: [:dev, :test], runtime: false},
+      # testing
+      {:ex_machina, "~> 2.7.0", only: :test},
+      {:mimic, "~> 1.7", only: :test},
+      {:excoveralls, "~> 0.18", only: :test}
     ]
   end
 

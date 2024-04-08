@@ -20,6 +20,9 @@ config :summoner_watch_dog, SummonerWatchDogWeb.Endpoint,
   secret_key_base: "2Rqj5PBWwCyWznt/5OXH0i7Xnl/8vEJD0p67gEhHM6SjSG36kGL2XJGvC9DqhWyL",
   server: false
 
+# Oban
+config :summoner_watch_dog, Oban, testing: :manual
+
 # Print only warnings and errors during test
 config :logger, level: :warning
 

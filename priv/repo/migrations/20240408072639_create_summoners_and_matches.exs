@@ -10,23 +10,23 @@ defmodule SummonerWatchDog.Repo.Migrations.CreateSummonersAndMatches do
       timestamps()
     end
 
-    create unique_index(:summoners, [:puuid, :region])
-    create index(:summoners, [:puuid])
+    create unique_index(:summoners, [:puuid])
 
-    create table(:matches) do
-      add :remote_match_id, :string, null: false
-      add :routing, :string
+    create table(:summoner_matches) do
+      add :puuid,
+          references(:summoners,
+            type: :string,
+            column: :puuid,
+            on_delete: :delete_all,
+            on_update: :update_all
+          ),
+          null: false
 
-      add :game_end, :utc_datetime
+      add :match_id, :string, null: false
+
+      timestamps()
     end
 
-    create unique_index(:matches, [:remote_match_id, :routing])
-
-    create table(:summoners_matches) do
-      add :summoner_id, references(:summoners, type: :uuid), null: false
-      add :match_id, references(:matches, type: :uuid), null: false
-    end
-
-    create unique_index(:summoners_matches, [:summoner_id, :match_id])
+    create unique_index(:summoner_matches, [:puuid, :match_id])
   end
 end

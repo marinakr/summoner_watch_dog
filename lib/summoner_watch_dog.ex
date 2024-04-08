@@ -3,10 +3,14 @@ defmodule SummonerWatchDog do
   API for some RIOT summoners info
   """
 
-  @app :summoner_watch_dog
   @default_matches_count 5
 
+  alias SummonerWatchDog.Oban.SummonerWorker
   alias SummonerWatchDog.Seraphine.Connector
+
+  @region_routings Connector.region_routings()
+  @regions Connector.regions()
+  @routings Connector.routings()
 
   @doc """
   Returns puuids summoner played last matches with (5 by default or configured number of matches)
@@ -16,6 +20,9 @@ defmodule SummonerWatchDog do
   ## Examples
 
       iex> SummonerWatchDog.list_summoners_played_with("br1", "DuchaGG")
+      OR  
+      iex> SummonerWatchDog.list_summoners_played_with("americas", "DuchaGG")
+      
       ["0Mannel", "JVAS14", "allan pvp insano", "DuchaGG", "SPANK01", "bgod má fase",
         "GordaoDoGolzin", "Loco de Breja", "CrocodiloCabelud", "SenhorDaCachaça",
         "Lciang", "Opantero", "Missrael", "Titã Mizeravão", "Hamletizinho",
@@ -27,37 +34,60 @@ defmodule SummonerWatchDog do
         "amilanese onion", "TeMpL4rI0", "FanaticoLoko", "NANAMI CHAN", "Toma sombra",
         "Bocal Quadrado", "SKT Xandy Trynda"]
   """
-  @spec list_summoners_played_with(Connector.region(), Connector.summoner_name()) ::
+  @spec list_summoners_played_with(
+          Connector.region() | Connector.routing(),
+          Connector.summoner_name()
+        ) ::
           [Connector.summoner_name()]
-          | {:error, :get_summoner_puuid_failed}
+          | {:error, :get_puuid_failed}
+          | {:error, :list_matches_failed}
           | {:error, :list_match_participants_failed}
-  def list_summoners_played_with(region, summoner_name) do
+          | {:error, :invalid_region}
+          | {:error, :not_found}
+  def list_summoners_played_with(region, summoner_name) when region in @regions do
     matches_count = config()[:matches_count] || @default_matches_count
 
-    with {:ok, puuid} <- Connector.get_summoner_puuid_by_name(region, summoner_name),
+    with {:ok, puuid} <- Connector.get_puuid_by_name(region, URI.encode(summoner_name)),
          {:ok, summoners} <- Connector.list_matches_participants(puuid, matches_count) do
+      summoners = Enum.filter(summoners, &(&1.puuid != puuid))
+
+      # summoners do not have region, matches-v5 does not return participants region
+      # for rest summoners, region will be found be search
+      monitor_summoners([%{puuid: puuid, region: region, name: summoner_name}])
       monitor_summoners(summoners)
-      Enum.map(summoners, & &1.summoner_name) -- [summoner_name]
+
+      Enum.map(summoners, & &1.summoner_name)
     end
   end
+
+  def list_summoners_played_with(routing, summoner_name) when routing in @routings do
+    # Not sure if this required or not, api works with regions (br1, oc1, etc)
+    # but in docs routings called regions
+    # So it is possible to find summoner by "americas", "Ducha GG"
+    Enum.reduce_while(@region_routings[routing], {:error, :not_found}, fn region, err ->
+      case list_summoners_played_with(region, summoner_name) do
+        {:error, _} -> {:cont, err}
+        names when is_list(names) -> {:halt, names}
+      end
+    end)
+  end
+
+  def list_summoners_played_with(_, _) do
+    {:error, :invalid_region}
+  end
+
+  def region?(region) when region in @regions, do: true
+  def region?(_), do: false
+
+  def routing?(routing) when routing in @routings, do: true
+  def routing?(_), do: false
 
   #############################################################################
   ## Internal
 
-  # Seraphine lib functions raise errors on http error codes
-  # Instead of exceptions, it's better to handle errors and know on what state it failed
-
-  def monitor_summoners(_summoners) do
-    #  Once fetched, all summoners will be monitored for new matches every minute for the next hour
-    # When a summoner plays a new match, the match id is logged to the console, such as:
-    # Summoner <summoner name> completed match <match id>
-
-    # https://developer.riotgames.com/apis#match-v5/GET_getMatch
-    # participant region is not returned, how can we know participant region?
+  defp monitor_summoners(summoners) do
+    Enum.each(summoners, &SummonerWorker.enqueue_store(&1))
   end
 
-  @spec config() :: Keyword.t()
-  defp config do
-    Application.get_env(@app, __MODULE__)
-  end
+  def config, do: Application.get_env(:summoner_watch_dog, __MODULE__)
 end

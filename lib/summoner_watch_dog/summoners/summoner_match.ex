@@ -3,21 +3,24 @@ defmodule SummonerWatchDog.Summoners.SummonerMatch do
   use SummonerWatchDog.Schema
   import Ecto.Changeset
 
-  alias SummonerWatchDog.Matches.Match
   alias SummonerWatchDog.Summoners.Summoner
 
   @type t :: %__MODULE__{}
 
-  schema "summoners_matches" do
-    belongs_to :match, Match
-    belongs_to :summoner, Summoner
+  schema "summoner_matches" do
+    field :match_id
+    field :puuid
+    belongs_to :summoner, Summoner, references: :puuid, define_field: false
+
+    timestamps()
   end
 
-  @fields [:match_id, :summoner_id]
-  def changeset(%__MODULE__{} = summoner_match, attrs) do
-    summoner_match
+  @fields [:puuid, :match_id]
+
+  def changeset(%__MODULE__{} = match, attrs) do
+    match
     |> cast(attrs, @fields)
     |> validate_required(@fields)
-    |> unique_constraint([:match_id, :summoner_id])
+    |> unique_constraint([:puuid, :match_id])
   end
 end

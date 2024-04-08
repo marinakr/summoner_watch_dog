@@ -9,12 +9,13 @@ defmodule SummonerWatchDogWeb.ErrorJSON do
   # By default, Phoenix returns the status message from
   # the template name. For example, "404.json" becomes
   # "Not Found".
+
   def render(template, assigns) do
-    %{
-      errors: %{
-        message: "#{inspect(assigns.message)}",
-        detail: Phoenix.Controller.status_message_from_template(template)
-      }
-    }
+    errors = %{detail: Phoenix.Controller.status_message_from_template(template)}
+
+    message = assigns[:message]
+    errors = if message, do: Map.put(errors, :message, message), else: errors
+
+    %{errors: errors}
   end
 end

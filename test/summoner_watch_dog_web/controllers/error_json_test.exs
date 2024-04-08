@@ -2,8 +2,8 @@ defmodule SummonerWatchDogWeb.ErrorJSONTest do
   use SummonerWatchDogWeb.ConnCase, async: true
 
   test "renders 404" do
-    assert SummonerWatchDogWeb.ErrorJSON.render("404.json", %{}) == %{
-             errors: %{detail: "Not Found"}
+    assert SummonerWatchDogWeb.ErrorJSON.render("404.json", %{message: "data not found"}) == %{
+             errors: %{detail: "Not Found", message: "data not found"}
            }
   end
 
