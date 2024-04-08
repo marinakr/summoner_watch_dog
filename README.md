@@ -6,8 +6,38 @@
  
  - LAST_MATCHES_NUMBER - optional, non negative integer, Number of matches to list summoner played, default is 5
 
-Get last summoner names summoner played with:
+There are two options to get last summoner names summoner played with:
+ - Web request
+ - Console
 
+**Web**
+
+To start your Phoenix server:
+
+  * Run `mix setup` to install and setup dependencies
+  * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+  * Export your export RIOT_API_KEY with `RIOT_API_KEY="RGAPI-YOUR-API-KEY"`
+
+Now you can request one of to summoners in br1 region, DuchaGG
+
+```
+curl "http://localhost:4000/api/summoners/br1/DuchaGG/summoners_last_played"
+
+["DRAGON D VAYNE","mahkiller94","Kojito","Top or Cliff","Valëntine","Hide on Tilt","Nick Boy","pirulitopipoca","DjonathaS2","rabão","LCKAZ","akuma tekina","Jurasz1","YuungBuda7k","Hasnei 007","Furtos","QuiwiKid","Ahri delle","JPrex","amaaz1ng","GastriteNervosä","king of pleyer","Pyke e meu main","DOLLY BAGUNCINHA","CarlhosNNE","OdinGoD","254814894 ","taMENSTRUANDOai","legendskillLOL","eoSmith","MIDl","Emma Robertss","thyagobm","Macunaíba","PSD Rocky","Kaminishi","CPE Blank","DuduCarregador23","Lazing","CPE Itzal","CPE Ctrl","SCHIN LATAO","Churits","Samba d Barreiro","GABRIELBESTtaric"]
+```
+
+Region `americas` will work as well:
+
+```
+curl "http://localhost:4000/api/summoners/americas/DuchaGG/summoners_last_played"
+
+
+
+["DRAGON D VAYNE","mahkiller94","Kojito","Top or Cliff","Valëntine","Hide on Tilt","Nick Boy","pirulitopipoca","DjonathaS2","rabão","LCKAZ","akuma tekina","Jurasz1","YuungBuda7k","Hasnei 007","Furtos","QuiwiKid","Ahri delle","JPrex","amaaz1ng","GastriteNervosä","king of pleyer","Pyke e meu main","DOLLY BAGUNCINHA","CarlhosNNE","OdinGoD","254814894 ","taMENSTRUANDOai","legendskillLOL","eoSmith","MIDl","Emma Robertss","thyagobm","Macunaíba","PSD Rocky","Kaminishi","CPE Blank","DuduCarregador23","Lazing","CPE Itzal","CPE Ctrl","SCHIN LATAO","Churits","Samba d Barreiro","GABRIELBESTtaric"]
+```
+
+
+**Console**
 ```
 in console, run:
 $ iex -S mix
@@ -71,7 +101,7 @@ COV    FILE                                        LINES RELEVANT   MISSED
 
 ```
 
-** Lints **
+**Code quality (linter, credo, etc)**
 
 ```
 $ mix quality
@@ -93,20 +123,3 @@ done in 0m2.75s
 done (passed successfully)
 
 ```
-
-To start your Phoenix server:
-
-  * Run `mix setup` to install and setup dependencies
-  * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
-
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
-
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
-
-## Learn more
-
-  * Official website: https://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Forum: https://elixirforum.com/c/phoenix-forum
-  * Source: https://github.com/phoenixframework/phoenix
