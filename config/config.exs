@@ -11,6 +11,10 @@ config :summoner_watch_dog,
   ecto_repos: [SummonerWatchDog.Repo],
   generators: [timestamp_type: :utc_datetime, binary_id: true]
 
+config :summoner_watch_dog, SummonerWatchDog.Repo,
+  migration_primary_key: [name: :id, type: :binary_id],
+  migration_foreign_key: [column: :id, type: :binary_id]
+
 # Configures the endpoint
 config :summoner_watch_dog, SummonerWatchDogWeb.Endpoint,
   url: [host: "localhost"],

@@ -3,7 +3,12 @@ defmodule SummonerWatchDogWeb.SummonerController do
   use SummonerWatchDogWeb, :controller
 
   def summoners_last_played(conn, %{region: region, name: summoner_name}) do
-    summoner_names = SummonerWatchDog.list_summoners_played_with(region, summoner_name)
-    render(conn, :summoners_last_played, summoner_names: summoner_names)
+    case SummonerWatchDog.list_summoners_played_with(region, summoner_name) do
+      summoner_names when is_list(summoner_names) ->
+        render(conn, "summoners_last_played.json", %{summoner_names: summoner_names})
+
+      {:error, message} ->
+        render(conn, "400.json", %{message: message})
+    end
   end
 end
