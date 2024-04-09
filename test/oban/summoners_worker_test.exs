@@ -59,18 +59,19 @@ defmodule SummonerWatchDog.Oban.SummonersWorkerTest do
 
     test "runs sync_matches for summoner" do
       assert [] = Repo.all(SummonerMatch)
-      summoner = insert(:summoner)
+      summoner = insert(:summoner, region: "br1")
 
       job =
         Oban.insert!(
           SummonerWorker.new(%{
             "action" => "sync_matches",
+            "region" => summoner.region,
             "puuid" => summoner.puuid,
             "name" => summoner.name
           })
         )
 
-      expect(Seraphine.API.RiotAPIBase, :get, 4, fn
+      expect(Seraphine.API.RiotAPIBase, :get, 1, fn
         "https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/" <> _, _ ->
           {:ok,
            %{
@@ -78,15 +79,6 @@ defmodule SummonerWatchDog.Oban.SummonersWorkerTest do
              body: ~s(["BR1_2919896148", "BR1_2919892164", "BR1_2919801004"]),
              headers: []
            }}
-
-        "https://asia.api.riotgames.com/lol/match/v5/matches/by-puuid/" <> _, _ ->
-          {:ok, %{status_code: 200, body: ~s(["BR1_2919772367"]), headers: []}}
-
-        "https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/" <> _, _ ->
-          {:ok, %{status_code: 200, body: ~s(["BR1_2919749258"]), headers: []}}
-
-        "https://sea.api.riotgames.com/lol/match/v5/matches/by-puuid/" <> _, _ ->
-          {:ok, %{status_code: 200, body: ~s([]), headers: []}}
       end)
 
       log =
@@ -97,10 +89,8 @@ defmodule SummonerWatchDog.Oban.SummonersWorkerTest do
       assert log =~ "Summoner Jane Smith completed match BR1_2919896148"
       assert log =~ "Summoner Jane Smith completed match BR1_2919892164"
       assert log =~ "Summoner Jane Smith completed match BR1_2919801004"
-      assert log =~ "Summoner Jane Smith completed match BR1_2919772367"
-      assert log =~ "Summoner Jane Smith completed match BR1_2919749258"
 
-      assert [_, _, _, _, _] = Repo.all(SummonerMatch)
+      assert [_, _, _] = Repo.all(SummonerMatch)
     end
 
     test "cronjob sync_matches creates new job for each summoner to sync matches" do
@@ -116,7 +106,8 @@ defmodule SummonerWatchDog.Oban.SummonersWorkerTest do
           args: %{
             "action" => "sync_matches",
             "puuid" => "puuid-#{i}",
-            "name" => "Summoner #{i}"
+            "name" => "Summoner #{i}",
+            "region" => "br1"
           }
         )
       end

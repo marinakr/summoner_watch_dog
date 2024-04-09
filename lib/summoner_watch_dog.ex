@@ -48,7 +48,7 @@ defmodule SummonerWatchDog do
     matches_count = config()[:matches_count] || @default_matches_count
 
     with {:ok, puuid} <- Connector.get_puuid_by_name(region, URI.encode(summoner_name)),
-         {:ok, summoners} <- Connector.list_matches_participants(puuid, matches_count) do
+         {:ok, summoners} <- Connector.list_matches_participants(puuid, region, matches_count) do
       summoners = Enum.filter(summoners, &(&1.puuid != puuid))
 
       SummonerWorker.enqueue_store(summoner_name, region, puuid)

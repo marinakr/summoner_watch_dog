@@ -11,7 +11,26 @@ defmodule SummonerWatchDog.Seraphine.Connector do
     "sea" => ~w(oc1 ph2 sg2 th2 tw2 vn2)
   }
 
-  @regions List.flatten(Map.values(@region_routings))
+  @routing_regions %{
+    "br1" => "americas",
+    "eun1" => "europe",
+    "euw1" => "europe",
+    "jp1" => "asia",
+    "kr" => "asia",
+    "la1" => "americas",
+    "la2" => "americas",
+    "na1" => "americas",
+    "oc1" => "sea",
+    "ph2" => "sea",
+    "ru" => "europe",
+    "sg2" => "sea",
+    "th2" => "sea",
+    "tr1" => "europe",
+    "tw2" => "sea",
+    "vn2" => "sea"
+  }
+
+  @regions Map.keys(@routing_regions)
   @routings Map.keys(@region_routings)
 
   def region_routings, do: @region_routings
@@ -46,44 +65,24 @@ defmodule SummonerWatchDog.Seraphine.Connector do
       {:error, :get_puuid_failed}
   end
 
-  @spec list_matches_participants(puuid(), non_neg_integer()) ::
-          {:ok, [puuid()]}
+  @spec list_matches_participants(puuid(), region(), non_neg_integer()) ::
+          {:ok, [summoner_info()]}
           | {:error, :list_matches_failed}
           | {:error, :list_match_participants_failed}
-  def list_matches_participants(puuid, matches_count) do
-    result =
-      Enum.reduce_while(@routings, [], fn routing, participants ->
-        with {:ok, match_ids} <- list_summoner_matches(routing, puuid, matches_count),
-             {:ok, routing_participants} <- collect_matche_participants(routing, match_ids) do
-          {:cont, routing_participants ++ participants}
-        else
-          error -> {:halt, error}
-        end
-      end)
+  def list_matches_participants(puuid, region, matches_count) do
+    routing = @routing_regions[region]
 
-    case result do
-      participants when is_list(participants) -> {:ok, Enum.uniq(participants)}
-      {:error, error} -> {:error, error}
+    with {:ok, match_ids} <- list_summoner_matches(region, puuid, matches_count),
+         {:ok, participants} <- collect_matches_participants(routing, match_ids) do
+      {:ok, Enum.uniq(participants)}
     end
   end
 
-  @spec list_summoner_matches(puuid(), non_neg_integer()) ::
+  @spec list_summoner_matches(region(), puuid(), non_neg_integer()) ::
           {:ok, [match_id()]} | {:error, :list_matches_failed}
-  def list_summoner_matches(puuid, matches_count) do
-    Enum.reduce_while(@routings, {:ok, []}, fn routing, {:ok, acc} ->
-      case list_summoner_matches(routing, puuid, matches_count) do
-        {:ok, match_ids} ->
-          {:cont, {:ok, match_ids ++ acc}}
+  def list_summoner_matches(region, puuid, matches_count) do
+    routing = @routing_regions[region]
 
-        error ->
-          {:halt, error}
-      end
-    end)
-  end
-
-  @spec list_summoner_matches(routing(), puuid(), non_neg_integer()) ::
-          {:ok, [match_id()]} | {:error, :list_matches_failed}
-  def list_summoner_matches(routing, puuid, matches_count) do
     Logger.metadata(riot_puuid: puuid, riot_routing: routing)
     {:ok, match_ids, _headers} = Seraphine.MatchV5.matches_by_puuid(routing, puuid, matches_count)
     {:ok, match_ids}
@@ -112,11 +111,11 @@ defmodule SummonerWatchDog.Seraphine.Connector do
 
   #############################################################################
   ## Internal
-  @spec collect_matche_participants(routing(), [match_id()]) ::
+  @spec collect_matches_participants(routing(), [match_id()]) ::
           {:ok, [summoner_info()]}
           | {:error, :list_match_participants_failed}
 
-  defp collect_matche_participants(routing, match_ids) do
+  defp collect_matches_participants(routing, match_ids) do
     match_ids
     |> Enum.reduce_while([], fn match_id, acc ->
       case list_match_participants(routing, match_id) do
