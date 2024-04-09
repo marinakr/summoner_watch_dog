@@ -44,7 +44,7 @@ config :logger, :console,
 config :phoenix, :json_library, Jason
 
 # RIOT API
-config :seraphine, :riot_api_key, "RGAPI-***"
+config :seraphine, :riot_api_key, System.get_env("RIOT_API_KEY") || "RGAPI-***"
 
 # Config last matches count for summoner to get 
 config :summoner_watch_dog, SummonerWatchDog, matches_count: 5
