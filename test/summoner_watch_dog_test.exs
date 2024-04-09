@@ -23,6 +23,8 @@ defmodule SummonerWatchDogTest do
 
       expect_match_participants()
 
+      names = SummonerWatchDog.list_summoners_played_with(@region, @name)
+
       assert [
                "Asia Player 7",
                "Europe Player 9",
@@ -34,7 +36,29 @@ defmodule SummonerWatchDogTest do
                "America Player 6",
                "America Player 2",
                "America Player 3"
-             ] == SummonerWatchDog.list_summoners_played_with(@region, @name)
+             ] == names
+
+      for {puuid, name} <- [
+            {"p7", "Asia Player 7"},
+            {"p9", "Europe Player 9"},
+            {"p10", "Europe Player 10"},
+            {"p1", "America Player 1"},
+            {"p4", "America Player 4"},
+            {"p8", "Asia Player 8"},
+            {"p5", "America Player 5"},
+            {"p6", "America Player 6"},
+            {"p2", "America Player 2"},
+            {"p3", "America Player 3"}
+          ] do
+        assert_enqueued(
+          worker: SummonerWatchDog.Oban.SummonerWorker,
+          args: %{
+            "action" => "store",
+            "puuid" => puuid,
+            "name" => name
+          }
+        )
+      end
     end
 
     test "works for routing (americas)" do

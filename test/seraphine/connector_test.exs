@@ -33,32 +33,6 @@ defmodule SummonerWatchDog.Seraphine.ConnectorTest do
     end
   end
 
-  describe "get_summoner_name_by_puuid/2" do
-    test "can fetch summoner name" do
-      region = "br1"
-      puuid = gen_remote_id()
-      url = "https://br1.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/#{puuid}"
-
-      expect(Seraphine.API.RiotAPIBase, :get, fn ^url, _ ->
-        {:ok, %{status_code: 200, body: ~s({"name": "Summoner 1"}), headers: []}}
-      end)
-
-      assert {:ok, "Summoner 1"} = Connector.get_summoner_name_by_puuid(region, puuid)
-    end
-
-    test "handles Seraphine raised error" do
-      region = "br1"
-      puuid = gen_remote_id()
-
-      expect(Seraphine.API.RiotAPIBase, :get, fn _, _ ->
-        {:ok, %{status_code: 400, body: "Bad request", headers: []}}
-      end)
-
-      assert {:error, :get_summoner_name_failed} =
-               Connector.get_summoner_name_by_puuid(region, puuid)
-    end
-  end
-
   describe "list_summoner_matches/2" do
     test "works for all regions" do
       puuid = gen_remote_id()
