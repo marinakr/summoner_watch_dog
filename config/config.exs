@@ -52,7 +52,7 @@ config :summoner_watch_dog, SummonerWatchDog, matches_count: 5
 # Oban
 config :summoner_watch_dog, Oban,
   engine: Oban.Engines.Basic,
-  queues: [default: 10],
+  queues: [default: 1],
   repo: SummonerWatchDog.Repo,
   plugins: [
     {Oban.Plugins.Cron,

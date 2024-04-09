@@ -1,5 +1,5 @@
 defmodule SummonerWatchDog.Oban.SummonersWorkerTest do
-  use SummonerWatchDog.DataCase, async: true
+  use SummonerWatchDog.DataCase, async: false
 
   alias SummonerWatchDog.Oban.SummonerWorker
   alias SummonerWatchDog.Repo
@@ -11,23 +11,18 @@ defmodule SummonerWatchDog.Oban.SummonersWorkerTest do
 
   @puuid gen_remote_id()
   @region "br1"
-  @summoner_name "Summoner A"
+  @name "Summoner A"
 
   describe "enqueue_store/1" do
     test "creates job to create summoner asynchronously" do
-      assert :ok =
-               SummonerWorker.enqueue_store(%{
-                 puuid: @puuid,
-                 region: @region,
-                 summoner_name: @summoner_name
-               })
+      assert :ok = SummonerWorker.enqueue_store(@name, @region, @puuid)
 
       assert_enqueued(
         worker: SummonerWorker,
         args: %{
           "puuid" => @puuid,
           "region" => @region,
-          "summoner_name" => @summoner_name,
+          "name" => @name,
           "action" => "store"
         }
       )
@@ -54,40 +49,12 @@ defmodule SummonerWatchDog.Oban.SummonersWorkerTest do
             "action" => "store",
             "puuid" => @puuid,
             "region" => @region,
-            "summoner_name" => @summoner_name
+            "name" => @name
           })
         )
 
       assert {:ok, _} = SummonerWorker.perform(job)
       assert %Summoner{} = Summoners.get_by(@puuid, @region)
-    end
-
-    test "finds region and stores summoner" do
-      job =
-        Oban.insert!(
-          SummonerWorker.new(%{
-            "action" => "store",
-            "puuid" => @puuid,
-            "summoner_name" => @summoner_name
-          })
-        )
-
-      expect(Seraphine.API.RiotAPIBase, :get, 3, fn
-        "https://na1." <> _, _ ->
-          {:ok, %{status_code: 400, body: "Bad request", headers: []}}
-
-        "https://br1." <> _, _ ->
-          {:ok, %{status_code: 200, body: ~s({"name": "Summoner 1"}), headers: []}}
-
-        "https://la1." <> _, _ ->
-          {:ok, %{status_code: 200, body: ~s({"name": "#{@summoner_name}"}), headers: []}}
-      end)
-
-      # Add code find a region for summoner
-      assert {:ok, %Summoner{id: id}} = SummonerWorker.perform(job)
-
-      assert %Summoner{puuid: @puuid, name: @summoner_name, region: "la1"} =
-               Repo.get(Summoner, id)
     end
 
     test "runs sync_matches for summoner" do
@@ -99,7 +66,7 @@ defmodule SummonerWatchDog.Oban.SummonersWorkerTest do
           SummonerWorker.new(%{
             "action" => "sync_matches",
             "puuid" => summoner.puuid,
-            "summoner_name" => summoner.name
+            "name" => summoner.name
           })
         )
 
@@ -149,7 +116,7 @@ defmodule SummonerWatchDog.Oban.SummonersWorkerTest do
           args: %{
             "action" => "sync_matches",
             "puuid" => "puuid-#{i}",
-            "summoner_name" => "Summoner #{i}"
+            "name" => "Summoner #{i}"
           }
         )
       end

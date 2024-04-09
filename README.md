@@ -36,6 +36,11 @@ curl "http://localhost:4000/api/summoners/americas/DuchaGG/summoners_last_played
 ["DRAGON D VAYNE","mahkiller94","Kojito","Top or Cliff","Valëntine","Hide on Tilt","Nick Boy","pirulitopipoca","DjonathaS2","rabão","LCKAZ","akuma tekina","Jurasz1","YuungBuda7k","Hasnei 007","Furtos","QuiwiKid","Ahri delle","JPrex","amaaz1ng","GastriteNervosä","king of pleyer","Pyke e meu main","DOLLY BAGUNCINHA","CarlhosNNE","OdinGoD","254814894 ","taMENSTRUANDOai","legendskillLOL","eoSmith","MIDl","Emma Robertss","thyagobm","Macunaíba","PSD Rocky","Kaminishi","CPE Blank","DuduCarregador23","Lazing","CPE Itzal","CPE Ctrl","SCHIN LATAO","Churits","Samba d Barreiro","GABRIELBESTtaric"]
 ```
 
+Output when server is working:
+```
+[warning] Summoner YuungBuda7k completed match BR1_2920708977
+```
+
 
 **Console**
 ```
@@ -48,16 +53,7 @@ Compiling 2 files (.ex)
 Interactive Elixir (1.14.3) - press Ctrl+C to exit (type h() ENTER for help)
 iex(1)> SummonerWatchDog.list_summoners_played_with("br1", "DuchaGG")
 
-      ["0Mannel", "JVAS14", "allan pvp insano", "DuchaGG", "SPANK01", "bgod má fase",
-        "GordaoDoGolzin", "Loco de Breja", "CrocodiloCabelud", "SenhorDaCachaça",
-        "Lciang", "Opantero", "Missrael", "Titã Mizeravão", "Hamletizinho",
-        "JussiCleido66", "Luizhmpontes", "l2Defendi", "semlee", "Angelico",
-        "Christian5320", "The Shepherd", "bruno9191", "ZPr9o", "Chapecoense123",
-        "Dancrazy", "Na Keria", "isonOx", "TUTUTIRULIPA", "Biel gala doce",
-        "SrFISICOturista", "Alemao do Forro", "xêro de fimose", "BepplerFanBoy",
-        "Alumínio", "im not your ally", "Cupcat", "vitoxgameprays", "AvarezaA",
-        "amilanese onion", "TeMpL4rI0", "FanaticoLoko", "NANAMI CHAN", "Toma sombra",
-        "Bocal Quadrado", "SKT Xandy Trynda"]
+["DRAGON D VAYNE","mahkiller94","Kojito","Top or Cliff","Valëntine","Hide on Tilt","Nick Boy","pirulitopipoca","DjonathaS2","rabão","LCKAZ","akuma tekina","Jurasz1","YuungBuda7k","Hasnei 007","Furtos","QuiwiKid","Ahri delle","JPrex","amaaz1ng","GastriteNervosä","king of pleyer","Pyke e meu main","DOLLY BAGUNCINHA","CarlhosNNE","OdinGoD","254814894 ","taMENSTRUANDOai","legendskillLOL","eoSmith","MIDl","Emma Robertss","thyagobm","Macunaíba","PSD Rocky","Kaminishi","CPE Blank","DuduCarregador23","Lazing","CPE Itzal","CPE Ctrl","SCHIN LATAO","Churits","Samba d Barreiro","GABRIELBESTtaric"]
 ```
 
 **Testing**

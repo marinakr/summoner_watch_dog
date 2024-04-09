@@ -51,10 +51,11 @@ defmodule SummonerWatchDog do
          {:ok, summoners} <- Connector.list_matches_participants(puuid, matches_count) do
       summoners = Enum.filter(summoners, &(&1.puuid != puuid))
 
-      # summoners do not have region, matches-v5 does not return participants region
-      # for rest summoners, region will be found be search
-      monitor_summoners([%{puuid: puuid, region: region, name: summoner_name}])
-      monitor_summoners(summoners)
+      SummonerWorker.enqueue_store(summoner_name, region, puuid)
+
+      # https://developer.riotgames.com/apis#match-v5/GET_getMatch
+      # region is not returned, assume summoners play in same region
+      Enum.each(summoners, &SummonerWorker.enqueue_store(&1.summoner_name, region, &1.puuid))
 
       Enum.map(summoners, & &1.summoner_name)
     end
@@ -84,10 +85,5 @@ defmodule SummonerWatchDog do
 
   #############################################################################
   ## Internal
-
-  defp monitor_summoners(summoners) do
-    Enum.each(summoners, &SummonerWorker.enqueue_store(&1))
-  end
-
   def config, do: Application.get_env(:summoner_watch_dog, __MODULE__)
 end

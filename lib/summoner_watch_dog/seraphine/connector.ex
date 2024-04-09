@@ -46,19 +46,6 @@ defmodule SummonerWatchDog.Seraphine.Connector do
       {:error, :get_puuid_failed}
   end
 
-  @spec get_summoner_name_by_puuid(region(), puuid()) ::
-          {:ok, binary()} | {:error, :get_summoner_name_failed}
-  def get_summoner_name_by_puuid(region, puuid) do
-    Logger.metadata(riot_puuid: puuid, riot_region: region)
-
-    {:ok, %{name: name}, []} = Seraphine.SummonerV4.summoner_by_puuid(region, puuid)
-    {:ok, name}
-  rescue
-    seraphine_error ->
-      Logger.error("Failed to fetch summoner by puuid", seraphine_error: seraphine_error.message)
-      {:error, :get_summoner_name_failed}
-  end
-
   @spec list_matches_participants(puuid(), non_neg_integer()) ::
           {:ok, [puuid()]}
           | {:error, :list_matches_failed}
