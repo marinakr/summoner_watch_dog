@@ -73,12 +73,12 @@ Test modules are most neccessary
  Randomized with seed 912015
 ----------------
 COV    FILE                                        LINES RELEVANT   MISSED
- 77.7% lib/summoner_watch_dog.ex                      93       18        4
+ 76.4% lib/summoner_watch_dog.ex                      89       17        4
  80.0% lib/summoner_watch_dog/application.ex          36        5        1
- 95.0% lib/summoner_watch_dog/oban/summoner_wor      109       20        1
+ 90.9% lib/summoner_watch_dog/oban/summoner_wor       73       11        1
   0.0% lib/summoner_watch_dog/repo.ex                  5        0        0
   0.0% lib/summoner_watch_dog/schema.ex               10        0        0
- 87.8% lib/summoner_watch_dog/seraphine/connect      150       41        5
+ 90.0% lib/summoner_watch_dog/seraphine/connect      136       30        3
 100.0% lib/summoner_watch_dog/summoner_matches.       34        6        0
 100.0% lib/summoner_watch_dog/summoners.ex            32        6        0
 100.0% lib/summoner_watch_dog/summoners/summone       28        2        0
@@ -90,9 +90,9 @@ COV    FILE                                        LINES RELEVANT   MISSED
 100.0% lib/summoner_watch_dog_web/router.ex           15        2        0
  80.0% lib/summoner_watch_dog_web/telemetry.ex        92        5        1
 100.0% test/support/conn_case.ex                      38        2        0
- 57.1% test/support/data_case.ex                      62        7        3
+100.0% test/support/data_case.ex                      46        4        0
 100.0% test/support/factory.ex                        21        3        0
-[TOTAL]  88.3%
+[TOTAL]  90.4%
 ---------------
 
 ```

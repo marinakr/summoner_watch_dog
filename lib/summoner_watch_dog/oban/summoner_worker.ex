@@ -21,8 +21,8 @@ defmodule SummonerWatchDog.Oban.SummonerWorker do
     :ok
   end
 
-  def enqueue_sync_matches(puuid, name) do
-    %{action: :sync_matches, puuid: puuid, name: name}
+  def enqueue_sync_matches(region, puuid, name) do
+    %{action: :sync_matches, region: region, puuid: puuid, name: name}
     |> __MODULE__.new()
     |> Oban.insert!()
 
@@ -47,10 +47,11 @@ defmodule SummonerWatchDog.Oban.SummonerWorker do
 
   @latest_matches_count 10
   def perform(%Oban.Job{
-        args: %{"action" => "sync_matches", "puuid" => puuid, "name" => name}
+        args: %{"action" => "sync_matches", "region" => region, "puuid" => puuid, "name" => name}
       }) do
     # For PROD task, not `take home`, pagination and `gameEnd` parameted should be used
-    with {:ok, summoner_matches} <- Connector.list_summoner_matches(puuid, @latest_matches_count) do
+    with {:ok, summoner_matches} <-
+           Connector.list_summoner_matches(region, puuid, @latest_matches_count) do
       Enum.each(summoner_matches, fn match_id ->
         unless SummonerMatches.get_by(puuid, match_id) do
           Logger.warning("Summoner #{name} completed match #{match_id}")
@@ -63,7 +64,7 @@ defmodule SummonerWatchDog.Oban.SummonerWorker do
   def perform(%Oban.Job{args: %{"action" => "sync_matches"}}) do
     Summoner
     |> Repo.all()
-    |> Enum.each(&enqueue_sync_matches(&1.puuid, &1.name))
+    |> Enum.each(&enqueue_sync_matches(&1.region, &1.puuid, &1.name))
   end
 
   def perform(%Oban.Job{id: id, args: _args}) do
