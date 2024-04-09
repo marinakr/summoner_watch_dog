@@ -16,7 +16,8 @@ defmodule SummonerWatchDog.Application do
       # Start a worker by calling: SummonerWatchDog.Worker.start_link(arg)
       # {SummonerWatchDog.Worker, arg},
       # Start to serve requests, typically the last entry
-      SummonerWatchDogWeb.Endpoint
+      SummonerWatchDogWeb.Endpoint,
+      {Oban, Application.fetch_env!(:summoner_watch_dog, Oban)}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

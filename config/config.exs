@@ -11,6 +11,10 @@ config :summoner_watch_dog,
   ecto_repos: [SummonerWatchDog.Repo],
   generators: [timestamp_type: :utc_datetime, binary_id: true]
 
+config :summoner_watch_dog, SummonerWatchDog.Repo,
+  migration_primary_key: [name: :id, type: :binary_id],
+  migration_foreign_key: [column: :id, type: :binary_id]
+
 # Configures the endpoint
 config :summoner_watch_dog, SummonerWatchDogWeb.Endpoint,
   url: [host: "localhost"],
@@ -29,7 +33,7 @@ config :logger, :console,
     :request_id,
     # Riot API
     :riot_summoner_name,
-    :riot_summoner_puuid,
+    :riot_puuid,
     :riot_match_id,
     :riot_routing,
     :riot_region,
@@ -44,6 +48,18 @@ config :seraphine, :riot_api_key, "RGAPI-***"
 
 # Config last matches count for summoner to get 
 config :summoner_watch_dog, SummonerWatchDog, matches_count: 5
+
+# Oban
+config :summoner_watch_dog, Oban,
+  engine: Oban.Engines.Basic,
+  queues: [default: 10],
+  repo: SummonerWatchDog.Repo,
+  plugins: [
+    {Oban.Plugins.Cron,
+     crontab: [
+       {"* * * * *", SummonerWatchDog.Oban.SummonerWorker, args: %{action: "sync_matches"}}
+     ]}
+  ]
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

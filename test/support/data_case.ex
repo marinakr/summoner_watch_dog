@@ -20,10 +20,14 @@ defmodule SummonerWatchDog.DataCase do
     quote do
       alias SummonerWatchDog.Repo
 
+      use Oban.Testing, repo: SummonerWatchDog.Repo
+
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
       import SummonerWatchDog.DataCase
+      import SummonerWatchDog.Factory
+      import ExUnit.CaptureLog
     end
   end
 
