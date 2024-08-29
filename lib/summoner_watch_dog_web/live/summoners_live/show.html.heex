@@ -1,0 +1,38 @@
+<h1 class="text-center text-xl mb-6 font-semibold leading-8">
+  Show Summoner
+</h1>
+
+<%= if @live_action in [:edit] do %>
+  <.modal return_to={Routes.summoner_show_path(@socket, :show, @summoner)}>
+    <.live_component
+      module={SummonerWatchDogWeb.SummonerLive.FormComponent}
+      id={@summoner.id}
+      title={@page_title}
+      action={@live_action}
+      summoner={@summoner}
+      return_to={Routes.summoner_show_path(@socket, :show, @summoner)}
+    />
+  </.modal>
+<% end %>
+
+<ul>
+  <li>
+    <strong>Name:</strong>
+    <%= @summoner.name %>
+  </li>
+
+  <li>
+    <strong>PUUID:</strong>
+    <%= @summoner.puuid %>
+  </li>
+
+  <li>
+    <strong>region:</strong>
+    <%= @summoner.region %>
+  </li>
+</ul>
+
+<span>
+  <.link patch={Routes.summoner_show_path(@socket, :edit, @summoner)}>Edit</.link>
+</span>
+| <span><%= live_redirect("Back", to: Routes.summoner_index_path(@socket, :index)) %></span>

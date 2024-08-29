@@ -1,0 +1,30 @@
+<div>
+  <h2 class="text-lg font-semibold leading-8"><%= @title %></h2>
+  <.form
+    :let={f}
+    for={@changeset}
+    id="match-form"
+    phx-target={@myself}
+    phx-change="validate"
+    phx-submit="save"
+  >
+    <div class="space-y-8 bg-white mt-10">
+      <div class="mt-2 flex items-center justify-between gap-6">
+        <%= label(f, :match_id) %>
+        <%= text_input(f, :match_id) %>
+        <%= error_tag(f, :match_id) %>
+      </div>
+      <div class="mt-2 flex items-center justify-between gap-6">
+        <%= label(f, :puuid) %>
+        <%= textarea(f, :puuid) %>
+        <%= error_tag(f, :puuid) %>
+      </div>
+    </div>
+    <div class="mt-4">
+      <%= submit("Save",
+        class: "bg-blue-700 w-full rounded text-white py-1 px-4",
+        phx_disable_with: "Saving..."
+      ) %>
+    </div>
+  </.form>
+</div>

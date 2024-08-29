@@ -1,0 +1,63 @@
+<h1 class="text-center text-xl mb-6 font-semibold leading-8">
+  List matches
+</h1>
+
+<%= if @live_action in [:new, :edit] do %>
+  <.modal return_to={Routes.summoner_match_index_path(@socket, :index)}>
+    <.live_component
+      module={SummonerWatchDogWeb.SummonerMatchLive.FormComponent}
+      id={@match.id || :new}
+      title={@page_title}
+      action={@live_action}
+      match={@match}
+      return_to={Routes.summoner_match_index_path(@socket, :index)}
+    />
+  </.modal>
+<% end %>
+
+<div class="mb-4">
+  <.link patch={Routes.summoner_match_index_path(@socket, :new)} class="underline">
+    New match
+  </.link>
+</div>
+
+<table class="border-collapse border border-slate-400">
+  <thead>
+    <tr>
+      <th class="p-2 bg-gray-50 border border-slate-300">ID</th>
+      <th class="p-2 bg-gray-50 border border-slate-300">MATCH_ID</th>
+      <th class="p-2 bg-gray-50 border border-slate-300">Summoner PUUID</th>
+
+      <th class="p-2 bg-gray-50 border border-slate-300">Actions</th>
+    </tr>
+  </thead>
+  <tbody id="match">
+    <%= for match <- @matches do %>
+      <tr id={"match-#{match.id}"}>
+        <td class="p-2 border border-slate-300"><%= match.id %></td>
+        <td class="p-2 border border-slate-300"><%= match.match_id %></td>
+        <td class="p-2 border border-slate-300"><%= String.slice(match.puuid, 0..15) %></td>
+        <td class="p-2 border border-slate-300">
+          <span>
+            <%= live_redirect("Show",
+              to: Routes.summoner_match_show_path(@socket, :show, match)
+            ) %>
+          </span>
+          <span>
+            <%= live_patch("Edit",
+              to: Routes.summoner_match_index_path(@socket, :edit, match)
+            ) %>
+          </span>
+          <span>
+            <%= link("Delete",
+              to: "#",
+              phx_click: "delete",
+              phx_value_id: match.id,
+              data: [confirm: "Are you sure?"]
+            ) %>
+          </span>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

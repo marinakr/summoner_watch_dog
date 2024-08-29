@@ -13,6 +13,8 @@ defmodule SummonerWatchDog.Application do
       {DNSCluster,
        query: Application.get_env(:summoner_watch_dog, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: SummonerWatchDog.PubSub},
+      # Start the Finch HTTP client for sending emails
+      {Finch, name: SummonerWatchDog.Finch},
       # Start a worker by calling: SummonerWatchDog.Worker.start_link(arg)
       # {SummonerWatchDog.Worker, arg},
       # Start to serve requests, typically the last entry

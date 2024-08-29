@@ -17,11 +17,14 @@ config :summoner_watch_dog, SummonerWatchDog.Repo,
 # you can enable the server option below.
 config :summoner_watch_dog, SummonerWatchDogWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4002],
-  secret_key_base: "2Rqj5PBWwCyWznt/5OXH0i7Xnl/8vEJD0p67gEhHM6SjSG36kGL2XJGvC9DqhWyL",
+  secret_key_base: "yEgOFV1X3Qmp+JSdxVU+0cLDcH0TJWdsV2bPZplNGNNpSWpZQG9vSq2JF1kkuJaM",
   server: false
 
-# Oban
-config :summoner_watch_dog, Oban, testing: :manual
+# In test we don't send emails.
+config :summoner_watch_dog, SummonerWatchDog.Mailer, adapter: Swoosh.Adapters.Test
+
+# Disable swoosh api client as it is only required for production adapters.
+config :swoosh, :api_client, false
 
 # Print only warnings and errors during test
 config :logger, level: :warning
