@@ -6,6 +6,7 @@ defmodule SummonerWatchDog.Summoners.Summoner do
   alias SummonerWatchDog.Summoners.SummonerMatch
 
   @type t :: %__MODULE__{}
+  @type id :: Ecto.UUID.t()
 
   schema "summoners" do
     field :name
